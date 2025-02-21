@@ -17,9 +17,9 @@ public class AccountServiceImpl implements AccountService {
     private final LoansFeignClient loansFeignClient;
 
     @Override
-    public AccountDetailsResponse getAccountDetails(String accountNumber) {
-        List<CardDTO> cards = cardsFeignClient.getCardsByAccountNumber(accountNumber);
-        List<LoanDTO> loans = loansFeignClient.getLoansByAccountNumber(accountNumber);
+    public AccountDetailsResponse getAccountDetails(String correlationId, String accountNumber) {
+        List<CardDTO> cards = cardsFeignClient.getCardsByAccountNumber(correlationId,accountNumber);
+        List<LoanDTO> loans = loansFeignClient.getLoansByAccountNumber(correlationId, accountNumber);
         return new AccountDetailsResponse(accountNumber, cards, loans);
     }
 }
