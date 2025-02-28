@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: loans-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/loans}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8070
+
+accounts:
+  service:
+    url: ${ACCOUNTS_SERVICE_URL:http://localhost:8080}
+
+cards:
+  service:
+    url: ${CARDS_SERVICE_URL:http://localhost:8090}

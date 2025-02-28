@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
-@FeignClient(name = "loans-service", url = "http://localhost:8070")
+@FeignClient(name = "loans-service", url = "${loans.service.url}")
 public interface LoansFeignClient {
     @GetMapping("/api/loans/{accountNumber}")
     List<LoanDTO> getLoansByAccountNumber(@RequestHeader("microservices-correlation-id") String correlationId, @PathVariable String accountNumber);

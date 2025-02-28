@@ -1,0 +1,58 @@
+server:
+  port: 8072
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    config:
+      enabled: false
+    gateway:
+      routes:
+        - id: loans
+          uri: ${LOANS_SERVICE_URL:http://localhost:8070}
+          predicates:
+            - Path=/api/loans/**
+        - id: accounts
+          uri: ${ACCOUNTS_SERVICE_URL:http://localhost:8080}
+          predicates:
+            - Path=/api/accounts/**
+        - id: cards
+          uri: ${CARDS_SERVICE_URL:http://localhost:8090}
+          predicates:
+            - Path=/api/cards/**
+
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 10s
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${JWK_SET_URI:http://localhost:7080/realms/master/protocol/openid-connect/certs}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway,info,health,metrics
+        exclude: health,metrics,custom-endpoint
+  endpoint:
+    gateway:
+      access: unrestricted
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: "api-gateway"
+    description: "API Gateway"
+    version: "1.0.0"
+
+logging:
+  level:
+    com:
+      microservices_template:
+        api_gateway: DEBUG

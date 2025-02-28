@@ -1,5 +1,6 @@
 package com.microservices_template.api_gateway;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -11,6 +12,15 @@ import java.time.LocalDateTime;
 @SpringBootApplication
 public class ApiGatewayApplication {
 
+	@Value("${spring.cloud.gateway.routes[0].uri}")
+	private String loansServiceUrl;
+
+	@Value("${spring.cloud.gateway.routes[1].uri}")
+	private String accountsServiceUrl;
+
+	@Value("${spring.cloud.gateway.routes[2].uri}")
+	private String cardsServiceUrl;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
@@ -19,14 +29,14 @@ public class ApiGatewayApplication {
 	public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
 		return builder.routes()
 				.route("loans", r -> r.path("/api/loans/**")
-						.filters(f -> f.addResponseHeader( "X-Response-Time", LocalDateTime.now().toString()))
-						.uri("http://localhost:8070"))
+						.filters(f -> f.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
+						.uri(loansServiceUrl))
 				.route("accounts", r -> r.path("/api/accounts/**")
 						.filters(f -> f.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
-						.uri("http://localhost:8080"))
+						.uri(accountsServiceUrl))
 				.route("cards", r -> r.path("/api/cards/**")
 						.filters(f -> f.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
-						.uri("http://localhost:8090"))
+						.uri(cardsServiceUrl))
 				.build();
 	}
 }

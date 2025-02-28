@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
-@FeignClient(name = "cards-service", url = "http://localhost:8090")
+@FeignClient(name = "cards-service", url = "${cards.service.url}")
 public interface CardsFeignClient {
     @GetMapping("/api/cards/{accountNumber}")
-    List<CardDTO> getCardsByAccountNumber(@RequestHeader("microservices-correlation-id") String correlationId,@PathVariable String accountNumber);
+    List<CardDTO> getCardsByAccountNumber(@RequestHeader("microservices-correlation-id") String correlationId, @PathVariable String accountNumber);
 }
