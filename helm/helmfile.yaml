@@ -1,0 +1,24 @@
+environments:
+  dev: { }
+  prod: { }
+
+releases:
+  - name: accounts-service
+    chart: ./services/accounts
+    values:
+      - ./services/accounts/values-{{ .Environment.Name }}.yaml
+
+  - name: cards-service
+    chart: ./services/cards
+    values:
+      - ./services/cards/values-{{ .Environment.Name }}.yaml
+
+  - name: loans-service
+    chart: ./services/loans
+    values:
+      - ./services/loans/values-{{ .Environment.Name }}.yaml
+
+  - name: api-gateway
+    chart: ./services/api-gateway
+    values:
+      - ./services/api-gateway/values-{{ .Environment.Name }}.yaml
