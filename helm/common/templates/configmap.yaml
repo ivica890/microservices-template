@@ -1,0 +1,12 @@
+{{- define "common.configmap" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMapName }}
+data:
+  DB_URL: {{ .Values.global.dbUrl | quote }}
+  ACCOUNTS_SERVICE_URL: {{ .Values.global.accountsServiceUrl | quote }}
+  CARDS_SERVICE_URL: {{ .Values.global.cardsServiceUrl | quote }}
+  LOANS_SERVICE_URL: {{ .Values.global.loansServiceUrl | quote }}
+  JWK_SET_URI: {{ .Values.global.jwkSetUri | quote }}
+{{- end -}}

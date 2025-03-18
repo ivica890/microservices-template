@@ -1,0 +1,27 @@
+global:
+  dbUrl: jdbc:postgresql://postgres:5432/cards
+  dbUsername: postgres
+  dbPassword: postgres
+  accountsServiceUrl: http://accounts-service:8080
+  cardsServiceUrl: http://cards-service:8090
+  loansServiceUrl: http://loans-service:8070
+  jwkSetUri: http://keycloak-auth-server:8080/realms/master/protocol/openid-connect/certs
+  postgres:
+    user: postgres
+    password: postgres
+
+common:
+  image:
+    repository: ivica890/cards
+    tag: v2
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+
+replicaCount: 1
+hasConfigMap: true
+configMapName: cards-configmap
+hasSecret: true
+secretName: cards-secret
