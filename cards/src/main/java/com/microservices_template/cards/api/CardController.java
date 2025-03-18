@@ -17,7 +17,8 @@ public class CardController {
 
     @GetMapping("/{accountNumber}")
     public List<CardDTO> getCards( @RequestHeader("microservices-correlation-id") String correlationId, @PathVariable String accountNumber) {
-        log.info("Correlation ID: {}", correlationId);
+//        log.info("Correlation ID: {}", correlationId);
+        log.debug("getCards method start");
         return cardService.getCardsByAccountNumber(accountNumber);
     }
 }

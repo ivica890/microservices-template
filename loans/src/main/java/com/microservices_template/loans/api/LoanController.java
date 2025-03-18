@@ -17,7 +17,8 @@ public class LoanController {
 
     @GetMapping("/{accountNumber}")
     public List<LoanDTO> getLoans(@RequestHeader("microservices-correlation-id") String correlationId, @PathVariable String accountNumber) {
-        log.info("Correlation ID: {}", correlationId);
+//        log.info("Correlation ID: {}", correlationId);
+        log.debug("getLoans method start");
         return loanService.getLoansByAccountNumber(accountNumber);
     }
 }

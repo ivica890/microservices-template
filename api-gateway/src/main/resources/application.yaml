@@ -54,5 +54,6 @@ info:
 logging:
   level:
     com:
-      microservices_template:
-        api_gateway: DEBUG
+      microservices_template.api_gateway: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"

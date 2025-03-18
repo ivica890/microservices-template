@@ -22,3 +22,41 @@ loans:
 cards:
   service:
     url: ${CARDS_SERVICE_URL:http://localhost:8090}
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    shutdown:
+      enabled: true
+    health:
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+
+info:
+  app:
+    name: "accounts"
+    description: "Accounts Application"
+    version: "1.0.0"
+
+logging:
+  level:
+    com:
+      microservices_template.accounts: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"

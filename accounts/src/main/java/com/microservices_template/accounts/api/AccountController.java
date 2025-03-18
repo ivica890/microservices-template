@@ -16,7 +16,8 @@ public class AccountController {
     @GetMapping("/{accountNumber}")
     public AccountDetailsResponse getAccountDetails(@RequestHeader("microservices-correlation-id") String correlationId, @PathVariable String accountNumber
                                                     ) {
-        log.info("Correlation ID: {}", correlationId);
+//        log.info("Correlation ID: {}", correlationId);
+        log.debug("getCardsByAccountNumber method start");
         return accountService.getAccountDetails(correlationId,accountNumber);
     }
 }
