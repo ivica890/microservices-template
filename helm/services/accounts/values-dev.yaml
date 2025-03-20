@@ -5,7 +5,7 @@ global:
   accountsServiceUrl: http://accounts-service:8080
   cardsServiceUrl: http://cards-service:8090
   loansServiceUrl: http://loans-service:8070
-  jwkSetUri: http://keycloak-auth-server:8080/realms/master/protocol/openid-connect/certs
+  jwkSetUri: http://keycloak:80/realms/master/protocol/openid-connect/certs
 #  postgres:
 #    user: postgres
 #    password: postgres
