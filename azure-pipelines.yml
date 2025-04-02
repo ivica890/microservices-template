@@ -13,8 +13,8 @@ variables:
 
   # Define paths for each microservice
   microservice1Path: 'accounts'  # Replace with your actual path
-  microservice2Path: 'cards'  # Replace with your actual path
-  microservice3Path: 'loans'  # Replace with your actual path
+  # microservice2Path: 'cards'  # Replace with your actual path
+  # microservice3Path: 'loans'  # Replace with your actual path
 
 stages:
 - stage: Build
@@ -32,29 +32,29 @@ stages:
         goals: 'clean jib:build -Dimage=$(containerRegistry)/accounts:$(tag)'
         options: '-DskipTests'
 
-  - job: BuildMicroservice2
-    displayName: Build Microservice 2
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: Maven@3
-      displayName: Build Microservice 2 Docker Image with Jib
-      inputs:
-        mavenPomFile: '$(microservice2Path)/pom.xml'
-        goals: 'clean jib:build -Dimage=$(containerRegistry)/cards:$(tag)'
-        options: '-DskipTests'
+  # - job: BuildMicroservice2
+  #   displayName: Build Microservice 2
+  #   pool:
+  #     vmImage: $(vmImageName)
+  #   steps:
+  #   - task: Maven@3
+  #     displayName: Build Microservice 2 Docker Image with Jib
+  #     inputs:
+  #       mavenPomFile: '$(microservice2Path)/pom.xml'
+  #       goals: 'clean jib:build -Dimage=$(containerRegistry)/cards:$(tag)'
+  #       options: '-DskipTests'
 
-  - job: BuildMicroservice3
-    displayName: Build Microservice 3
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: Maven@3
-      displayName: Build Microservice 3 Docker Image with Jib
-      inputs:
-        mavenPomFile: '$(microservice3Path)/pom.xml'
-        goals: 'clean jib:build -Dimage=$(containerRegistry)/loans:$(tag)'
-        options: '-DskipTests'
+  # - job: BuildMicroservice3
+  #   displayName: Build Microservice 3
+  #   pool:
+  #     vmImage: $(vmImageName)
+  #   steps:
+  #   - task: Maven@3
+  #     displayName: Build Microservice 3 Docker Image with Jib
+  #     inputs:
+  #       mavenPomFile: '$(microservice3Path)/pom.xml'
+  #       goals: 'clean jib:build -Dimage=$(containerRegistry)/loans:$(tag)'
+  #       options: '-DskipTests'
     - upload: manifests
       artifact: manifests
 
