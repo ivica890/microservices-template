@@ -6,6 +6,12 @@ global:
   cardsServiceUrl: http://cards-service:8090
   loansServiceUrl: http://loans-service:8070
   jwkSetUri: http://keycloak:80/realms/master/protocol/openid-connect/certs
+  openTelemetryJavaAgent: "-javaagent:/app/libs/opentelemetry-javaagent-2.11.0.jar"
+  otelExporterEndPoint: http://tempo-grafana-tempo-distributor:4318
+  otelExporterProtocol: http/protobuf
+  otelMetricsExporter: none
+  otelLogsExporter: none
+  otelServiceName: cards-service
   postgres:
     user: postgres
     password: postgres
@@ -13,7 +19,7 @@ global:
 common:
   image:
     repository: ivica890/cards
-    tag: v2
+    tag: v8
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP

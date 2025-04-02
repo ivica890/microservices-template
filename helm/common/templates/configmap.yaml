@@ -9,4 +9,10 @@ data:
   CARDS_SERVICE_URL: {{ .Values.global.cardsServiceUrl | quote }}
   LOANS_SERVICE_URL: {{ .Values.global.loansServiceUrl | quote }}
   JWK_SET_URI: {{ .Values.global.jwkSetUri | quote }}
+  JAVA_TOOL_OPTIONS: {{ .Values.global.openTelemetryJavaAgent | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.global.otelExporterEndPoint | quote }}
+  OTEL_METRICS_EXPORTER: {{ .Values.global.otelMetricsExporter | quote }}
+  OTEL_LOGS_EXPORTER: {{ .Values.global.otelLogsExporter | quote }}
+  OTEL_SERVICE_NAME: {{ .Values.global.otelServiceName | quote }}
+  OTEL_EXPORTER_OTLP_PROTOCOL : {{ .Values.global.otelExporterProtocol | quote }}
 {{- end -}}
