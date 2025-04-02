@@ -11,138 +11,169 @@ variables:
   vmImageName: 'ubuntu-latest'
   tag: '$(Build.BuildId)'
 
-  # Define paths for each microservice
-  microservice1Path: 'accounts'  # Replace with your actual path
-  # microservice2Path: 'cards'  # Replace with your actual path
-  # microservice3Path: 'loans'  # Replace with your actual path
+  # Path for accounts microservice
+  microservicePath: 'accounts'
 
 stages:
 - stage: Build
   displayName: Build stage
   jobs:
-  - job: BuildMicroservice1
-    displayName: Build Microservice 1
+  - job: BuildAccounts
+    displayName: Build Accounts Microservice
     pool:
       vmImage: $(vmImageName)
     steps:
     - task: Maven@3
-      displayName: Build Microservice 1 Docker Image with Jib
+      displayName: Build and Push Accounts Docker Image with Jib
       inputs:
-        mavenPomFile: '$(microservice1Path)/pom.xml'
+        mavenPomFile: '$(microservicePath)/pom.xml'
         goals: 'clean jib:build -Dimage=$(containerRegistry)/accounts:$(tag)'
         options: '-DskipTests'
+# trigger:
+# - azure-pipelines
 
-  # - job: BuildMicroservice2
-  #   displayName: Build Microservice 2
-  #   pool:
-  #     vmImage: $(vmImageName)
-  #   steps:
-  #   - task: Maven@3
-  #     displayName: Build Microservice 2 Docker Image with Jib
-  #     inputs:
-  #       mavenPomFile: '$(microservice2Path)/pom.xml'
-  #       goals: 'clean jib:build -Dimage=$(containerRegistry)/cards:$(tag)'
-  #       options: '-DskipTests'
+# resources:
+# - repo: self
 
-  # - job: BuildMicroservice3
-  #   displayName: Build Microservice 3
-  #   pool:
-  #     vmImage: $(vmImageName)
-  #   steps:
-  #   - task: Maven@3
-  #     displayName: Build Microservice 3 Docker Image with Jib
-  #     inputs:
-  #       mavenPomFile: '$(microservice3Path)/pom.xml'
-  #       goals: 'clean jib:build -Dimage=$(containerRegistry)/loans:$(tag)'
-  #       options: '-DskipTests'
-    - upload: manifests
-      artifact: manifests
+# variables:
+#   dockerRegistryServiceConnection: 'a28ba8d1-6339-4d70-9af9-4bf59bdad1de'
+#   containerRegistry: 'ivica890acr.azurecr.io'
+#   imagePullSecret: 'ivica890acr1016d349-auth'
+#   vmImageName: 'ubuntu-latest'
+#   tag: '$(Build.BuildId)'
 
-# - stage: Deploy
-#   displayName: Deploy stage
-#   dependsOn: Build
+#   # Define paths for each microservice
+#   microservice1Path: 'accounts'  # Replace with your actual path
+#   # microservice2Path: 'cards'  # Replace with your actual path
+#   # microservice3Path: 'loans'  # Replace with your actual path
 
+# stages:
+# - stage: Build
+#   displayName: Build stage
 #   jobs:
-#   - deployment: Deploy
-#     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
-#     displayName: Deploy
+#   - job: BuildMicroservice1
+#     displayName: Build Microservice 1
 #     pool:
 #       vmImage: $(vmImageName)
-#     environment: 'ivica890microservicestemplate-2531.default'
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - task: Kubernetes@1
-#             displayName: 'Set up kubectl'
-#             inputs:
-#               connectionType: 'Azure Resource Manager'
-#               azureSubscription: 'Your-Azure-Subscription'
-#               action: 'installKubectl'
+#     steps:
+#     - task: Maven@3
+#       displayName: Build Microservice 1 Docker Image with Jib
+#       inputs:
+#         mavenPomFile: '$(microservice1Path)/pom.xml'
+#         goals: 'clean jib:build -Dimage=$(containerRegistry)/accounts:$(tag)'
+#         options: '-DskipTests'
 
-#           - task: HelmInstaller@1
-#             displayName: 'Install Helm'
-#             inputs:
-#               helmVersionToInstall: 'latest'
+#   # - job: BuildMicroservice2
+#   #   displayName: Build Microservice 2
+#   #   pool:
+#   #     vmImage: $(vmImageName)
+#   #   steps:
+#   #   - task: Maven@3
+#   #     displayName: Build Microservice 2 Docker Image with Jib
+#   #     inputs:
+#   #       mavenPomFile: '$(microservice2Path)/pom.xml'
+#   #       goals: 'clean jib:build -Dimage=$(containerRegistry)/cards:$(tag)'
+#   #       options: '-DskipTests'
 
-#           - task: Kubernetes@1
-#             displayName: 'Create imagePullSecret'
-#             inputs:
-#               command: apply
-#               useConfigurationFile: false
-#               inline: |
-#                 apiVersion: v1
-#                 kind: Secret
-#                 metadata:
-#                   name: $(imagePullSecret)
-#                   namespace: $(k8sNamespaceForPR)
-#                 data:
-#                   .dockerconfigjson: $(dockerRegistryServiceConnection)
-#                 type: kubernetes.io/dockerconfigjson
+#   # - job: BuildMicroservice3
+#   #   displayName: Build Microservice 3
+#   #   pool:
+#   #     vmImage: $(vmImageName)
+#   #   steps:
+#   #   - task: Maven@3
+#   #     displayName: Build Microservice 3 Docker Image with Jib
+#   #     inputs:
+#   #       mavenPomFile: '$(microservice3Path)/pom.xml'
+#   #       goals: 'clean jib:build -Dimage=$(containerRegistry)/loans:$(tag)'
+#   #       options: '-DskipTests'
+#     - upload: manifests
+#       artifact: manifests
 
-#           - task: HelmDeploy@0
-#             displayName: 'Deploy with Helm'
-#             inputs:
-#               connectionType: 'Azure Resource Manager'
-#               azureSubscription: 'Your-Azure-Subscription'
-#               kubernetesCluster: '$(AKS_CLUSTER)'
-#               namespace: $(k8sNamespaceForPR)
-#               command: upgrade
-#               chartType: FilePath
-#               chartPath: $(helmChartPath)
-#               releaseName: '$(imageRepository)-$(tag)'
-#               overrideValues: |
-#                 image.repository=$(containerRegistry)/$(imageRepository)
-#                 image.tag=$(tag)
+# # - stage: Deploy
+# #   displayName: Deploy stage
+# #   dependsOn: Build
 
-#   - deployment: DeployPullRequest
-#     displayName: Deploy Pull request
-#     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
-#     pool:
-#       vmImage: $(vmImageName)
-#     environment: 'ivica890microservicestemplate-2531.$(k8sNamespaceForPR)'
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - task: Kubernetes@1
-#             displayName: 'Create a new namespace for the pull request'
-#             inputs:
-#               command: apply
-#               useConfigurationFile: true
-#               inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(k8sNamespaceForPR)" }}'
+# #   jobs:
+# #   - deployment: Deploy
+# #     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+# #     displayName: Deploy
+# #     pool:
+# #       vmImage: $(vmImageName)
+# #     environment: 'ivica890microservicestemplate-2531.default'
+# #     strategy:
+# #       runOnce:
+# #         deploy:
+# #           steps:
+# #           - task: Kubernetes@1
+# #             displayName: 'Set up kubectl'
+# #             inputs:
+# #               connectionType: 'Azure Resource Manager'
+# #               azureSubscription: 'Your-Azure-Subscription'
+# #               action: 'installKubectl'
 
-#           - task: HelmDeploy@0
-#             displayName: 'Deploy PR changes with Helm'
-#             inputs:
-#               connectionType: 'Azure Resource Manager'
-#               azureSubscription: 'Your-Azure-Subscription'
-#               kubernetesCluster: '$(AKS_CLUSTER)'
-#               namespace: $(k8sNamespaceForPR)
-#               command: upgrade
-#               chartType: FilePath
-#               chartPath: $(helmChartPath)
-#               releaseName: '$(imageRepository)-$(tag)'
-#               overrideValues: |
-#                 image.repository=$(containerRegistry)/$(imageRepository)
-#                 image.tag=$(tag)
+# #           - task: HelmInstaller@1
+# #             displayName: 'Install Helm'
+# #             inputs:
+# #               helmVersionToInstall: 'latest'
+
+# #           - task: Kubernetes@1
+# #             displayName: 'Create imagePullSecret'
+# #             inputs:
+# #               command: apply
+# #               useConfigurationFile: false
+# #               inline: |
+# #                 apiVersion: v1
+# #                 kind: Secret
+# #                 metadata:
+# #                   name: $(imagePullSecret)
+# #                   namespace: $(k8sNamespaceForPR)
+# #                 data:
+# #                   .dockerconfigjson: $(dockerRegistryServiceConnection)
+# #                 type: kubernetes.io/dockerconfigjson
+
+# #           - task: HelmDeploy@0
+# #             displayName: 'Deploy with Helm'
+# #             inputs:
+# #               connectionType: 'Azure Resource Manager'
+# #               azureSubscription: 'Your-Azure-Subscription'
+# #               kubernetesCluster: '$(AKS_CLUSTER)'
+# #               namespace: $(k8sNamespaceForPR)
+# #               command: upgrade
+# #               chartType: FilePath
+# #               chartPath: $(helmChartPath)
+# #               releaseName: '$(imageRepository)-$(tag)'
+# #               overrideValues: |
+# #                 image.repository=$(containerRegistry)/$(imageRepository)
+# #                 image.tag=$(tag)
+
+# #   - deployment: DeployPullRequest
+# #     displayName: Deploy Pull request
+# #     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
+# #     pool:
+# #       vmImage: $(vmImageName)
+# #     environment: 'ivica890microservicestemplate-2531.$(k8sNamespaceForPR)'
+# #     strategy:
+# #       runOnce:
+# #         deploy:
+# #           steps:
+# #           - task: Kubernetes@1
+# #             displayName: 'Create a new namespace for the pull request'
+# #             inputs:
+# #               command: apply
+# #               useConfigurationFile: true
+# #               inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(k8sNamespaceForPR)" }}'
+
+# #           - task: HelmDeploy@0
+# #             displayName: 'Deploy PR changes with Helm'
+# #             inputs:
+# #               connectionType: 'Azure Resource Manager'
+# #               azureSubscription: 'Your-Azure-Subscription'
+# #               kubernetesCluster: '$(AKS_CLUSTER)'
+# #               namespace: $(k8sNamespaceForPR)
+# #               command: upgrade
+# #               chartType: FilePath
+# #               chartPath: $(helmChartPath)
+# #               releaseName: '$(imageRepository)-$(tag)'
+# #               overrideValues: |
+# #                 image.repository=$(containerRegistry)/$(imageRepository)
+# #                 image.tag=$(tag)
