@@ -11,22 +11,22 @@ variables:
   vmImageName: 'ubuntu-latest'
   tag: '$(Build.BuildId)'
 
-  # Path for accounts microservice
-  microservicePath: 'accounts'
+  # Path for Accounts microservice
+  accountsMicroservicePath: 'accounts'  # Replace with your actual path
 
 stages:
 - stage: Build
   displayName: Build stage
   jobs:
-  - job: BuildAccounts
+  - job: BuildAccountsMicroservice
     displayName: Build Accounts Microservice
     pool:
       vmImage: $(vmImageName)
     steps:
     - task: Maven@3
-      displayName: Build and Push Accounts Docker Image with Jib
+      displayName: Build Accounts Microservice Docker Image with Jib
       inputs:
-        mavenPomFile: '$(microservicePath)/pom.xml'
+        mavenPomFile: '$(accountsMicroservicePath)/pom.xml'
         goals: 'clean jib:build -Dimage=$(containerRegistry)/accounts:$(tag)'
         options: '-DskipTests'
 # trigger:
