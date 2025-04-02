@@ -2,7 +2,7 @@ trigger:
 - azure-pipelines
 
 pool:
-  name: AgentSelfHosted
+  name: default  # Ensure this matches your self-hosted agent pool
 
 resources:
 - repo: self
@@ -11,7 +11,6 @@ variables:
   dockerRegistryServiceConnection: 'a28ba8d1-6339-4d70-9af9-4bf59bdad1de'
   containerRegistry: 'ivica890acr.azurecr.io'
   imagePullSecret: 'ivica890acr1016d349-auth'
-  vmImageName: 'ubuntu-latest'
   tag: '$(Build.BuildId)'
 
   # Path for Accounts microservice
@@ -24,7 +23,7 @@ stages:
   - job: BuildAccountsMicroservice
     displayName: Build Accounts Microservice
     pool:
-      vmImage: $(vmImageName)
+      name: default  # Use self-hosted agent pool
     steps:
     - task: Maven@3
       displayName: Build Accounts Microservice Docker Image with Jib
