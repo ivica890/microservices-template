@@ -1,6 +1,9 @@
 trigger:
 - azure-pipelines
 
+pool:
+  name: AgentSelfHosted
+
 resources:
 - repo: self
 
