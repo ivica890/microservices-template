@@ -96,8 +96,8 @@ stages:
 
     # Authenticate to Azure Kubernetes Service (AKS)
     - script: |
-        az aks get-credentials --resource-group microservices-rg --name aks-cluster
-      displayName: 'Login to AKS'
+        az aks get-credentials --resource-group microservices-rg --name aks-cluster --overwrite-existing
+        displayName: 'Login to AKS'
 
     # Deploy the Helm chart
     - script: |
