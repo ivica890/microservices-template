@@ -101,6 +101,8 @@ stages:
 
     # Deploy the Helm chart
     - script: |
+        echo "Current working directory:"
+        echo %CD%
         cd $(Build.SourcesDirectory)/helm/services/accounts
         helm upgrade --install accounts-service . --namespace default --set image.repository=ivica890acr.azurecr.io/accounts --set image.tag=51
       displayName: 'Deploy with Helm'
