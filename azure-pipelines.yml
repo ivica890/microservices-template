@@ -97,11 +97,12 @@ stages:
     # Authenticate to Azure Kubernetes Service (AKS)
     - script: |
         az aks get-credentials --resource-group microservices-rg --name aks-cluster --overwrite-existing
-        displayName: 'Login to AKS'
+      displayName: 'Login to AKS'
 
     # Deploy the Helm chart
     - script: |
-        helm upgrade --install $(releaseName) $(helmChartPath) --namespace $(namespace) --set image.repository=$(containerRegistry)/accounts --set image.tag=$(tag)
+        cd $(Build.SourcesDirectory)/helm
+        helm upgrade --install accounts-service ./services/accounts --namespace default --set image.repository=ivica890acr.azurecr.io/accounts --set image.tag=51
       displayName: 'Deploy with Helm'
 
 # trigger:
