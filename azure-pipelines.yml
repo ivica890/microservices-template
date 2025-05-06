@@ -25,31 +25,13 @@ stages:
     pool:
       name: default  # Self-hosted agent pool
     steps:
-
-    # Manually install JDK 21 (for Windows agents)
-    - script: |
-        $jdkUrl = "https://download.java.net/java/21/archive/jdk-21_windows-x64_bin.zip"
-        $jdkZip = "jdk-21.zip"
-        $jdkInstallDir = "C:\Program Files\Java\jdk-21"
-        
-        Invoke-WebRequest -Uri $jdkUrl -OutFile $jdkZip
-        Expand-Archive -Path $jdkZip -DestinationPath "C:\Program Files\Java"
-        Remove-Item $jdkZip -Force
-        echo "JAVA_HOME=$jdkInstallDir" | Out-File -FilePath "$env:HOME\.bashrc" -Append
-
-        # Set JAVA_HOME
-        $env:JAVA_HOME = $jdkInstallDir
-        echo "JAVA_HOME set to $env:JAVA_HOME"
-        echo "Java Version: $(java -version)"
-      displayName: 'Install JDK 21 on Windows'
-
-    # Verify Java and Maven versions
+    
+    # Check Java version before building with Maven
     - script: |
         java -version
-        mvn -v
-      displayName: 'Verify Java and Maven Versions'
+      displayName: 'Check Java Version'
 
-    # Maven build with Jib
+    # Maven build with Jib (no need to install JDK manually)
     - task: Maven@3
       displayName: Build Accounts Microservice Docker Image with Jib
       inputs:
