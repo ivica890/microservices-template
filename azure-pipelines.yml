@@ -25,14 +25,7 @@ stages:
     pool:
       name: default  # Self-hosted agent pool
     steps:
-
-    - script: |
-        echo Setting JAVA_HOME to JDK 21
-        set JAVA_HOME=C:\Program Files\Java\jdk-21
-        set PATH=%JAVA_HOME%\bin;%PATH%
-        echo JAVA_HOME is %JAVA_HOME%
-      displayName: 'Set JAVA_HOME to JDK 21'
-
+    
     - task: Maven@3
       displayName: Build Accounts Microservice Docker Image with Jib
       inputs:
