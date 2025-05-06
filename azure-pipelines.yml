@@ -54,7 +54,7 @@ variables:
   accountsMicroservicePath: 'accounts'  # Replace with your actual path
 
   # Helm Chart variables
-  helmChartPath: './helm/servives/accounts'  # Path to your Helm chart
+  helmChartPath: '.helm/services/accounts'  # Path to your Helm chart
   releaseName: 'accounts-service'     # Release name for Helm
   namespace: 'default'                # Kubernetes namespace (change as needed)
 
