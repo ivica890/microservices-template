@@ -102,7 +102,17 @@ stages:
     # Deploy the Helm chart
     - script: |
         echo "Current working directory:"
-        echo %CD%
+        echo %CD%  # For Windows
+      displayName: 'Log Current Working Directory'
+
+    # Ensure Helm dependencies are installed
+    - script: |
+        echo "Running helm dependency build..."
+        helm dependency build $(Build.SourcesDirectory)/helm/services/accounts
+      displayName: 'Build Helm Dependencies'
+
+    # Deploy with Helm (Fix the path to the chart)
+    - script: |
         cd $(Build.SourcesDirectory)/helm/services/accounts
         helm upgrade --install accounts-service . --namespace default --set image.repository=ivica890acr.azurecr.io/accounts --set image.tag=51
       displayName: 'Deploy with Helm'
