@@ -23,14 +23,27 @@ stages:
   - job: BuildAccountsMicroservice
     displayName: Build Accounts Microservice
     pool:
-      name: default  # Use self-hosted agent pool
+      name: default  # Self-hosted agent pool
     steps:
+
+    - script: |
+        echo "##[group]Setting JAVA_HOME"
+        export JAVA_HOME="/path/to/jdk-21"
+        export PATH="$JAVA_HOME/bin:$PATH"
+        echo "JAVA_HOME is set to $JAVA_HOME"
+        echo "##vso[task.setvariable variable=JAVA_HOME]$JAVA_HOME"
+        echo "##[endgroup]"
+      displayName: 'Set JAVA_HOME to JDK 21'
+      shell: powershell
+
     - task: Maven@3
       displayName: Build Accounts Microservice Docker Image with Jib
       inputs:
         mavenPomFile: '$(accountsMicroservicePath)/pom.xml'
-        goals: 'clean compile jib:build -Dimage=$(containerRegistry)/accounts:$(tag)'
-        options: '-DskipTests'
+        goals: 'clean compile jib:build'
+        options: '-DskipTests -Dimage=$(containerRegistry)/accounts:$(tag)'
+
+
 # trigger:
 # - azure-pipelines
 
