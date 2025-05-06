@@ -34,7 +34,6 @@ stages:
         echo "##vso[task.setvariable variable=JAVA_HOME]$JAVA_HOME"
         echo "##[endgroup]"
       displayName: 'Set JAVA_HOME to JDK 21'
-      shell: powershell
 
     - task: Maven@3
       displayName: Build Accounts Microservice Docker Image with Jib
