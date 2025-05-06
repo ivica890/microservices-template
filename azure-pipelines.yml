@@ -29,7 +29,7 @@ stages:
       displayName: Build Accounts Microservice Docker Image with Jib
       inputs:
         mavenPomFile: '$(accountsMicroservicePath)/pom.xml'
-        goals: 'clean jib:build -Dimage=$(containerRegistry)/accounts:$(tag)'
+        goals: 'clean compile jib:build -Dimage=$(containerRegistry)/accounts:$(tag)'
         options: '-DskipTests'
 # trigger:
 # - azure-pipelines
