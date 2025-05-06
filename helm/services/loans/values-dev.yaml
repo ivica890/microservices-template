@@ -1,0 +1,32 @@
+global:
+  dbUrl: jdbc:postgresql://postgres:5432/loans
+  dbUsername: postgres
+  dbPassword: postgres
+  accountsServiceUrl: http://accounts-service:8080
+  cardsServiceUrl: http://cards-service:8090
+  loansServiceUrl: http://loans-service:8070
+  jwkSetUri: http://keycloak:80/realms/master/protocol/openid-connect/certs
+  openTelemetryJavaAgent: "-javaagent:/app/libs/opentelemetry-javaagent-2.11.0.jar"
+  otelExporterEndPoint: http://tempo-grafana-tempo-distributor:4318
+  otelExporterProtocol: http/protobuf
+  otelMetricsExporter: none
+  otelLogsExporter: none
+  otelServiceName: loans-service
+  postgres:
+    user: postgres
+    password: postgres
+
+common:
+  image:
+    repository: ivica890/loans
+    tag: v8
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8070
+
+replicaCount: 1
+hasConfigMap: true
+configMapName: loans-configmap
+hasSecret: true
+secretName: loans-secret

@@ -1,0 +1,32 @@
+{{- define "common.deployment" -}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: {{ .Values.common.image.repository }}:{{ .Values.common.image.tag }}
+          imagePullPolicy: {{ .Values.common.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.common.service.port }}
+          {{- if .Values.hasConfigMap }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          {{- end }}
+          {{- if .Values.hasSecret }}
+            - secretRef:
+                name: {{ .Values.secretName }}
+          {{- end }}
+{{- end -}}

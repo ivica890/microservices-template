@@ -1,0 +1,32 @@
+global:
+  dbUrl: jdbc:postgresql://microservices-postgres:5432/accounts
+  dbUsername: postgres
+  dbPassword: postgres
+  accountsServiceUrl: http://accounts-service:8080
+  cardsServiceUrl: http://cards-service:8090
+  loansServiceUrl: http://loans-service:8070
+  jwkSetUri: http://keycloak:80/realms/master/protocol/openid-connect/certs
+  openTelemetryJavaAgent: "-javaagent:/app/libs/opentelemetry-javaagent-2.11.0.jar"
+  otelExporterEndPoint: http://tempo-grafana-tempo-distributor:4318
+  otelExporterProtocol: http/protobuf
+  otelMetricsExporter: none
+  otelLogsExporter: none
+  otelServiceName: api-gateway
+  postgres:
+    user: postgres
+    password: postgres
+
+common:
+  image:
+    repository: ivica890/api-gateway2
+    tag: v8
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8072
+
+replicaCount: 1
+hasConfigMap: true
+configMapName: api-gateway-configmap
+hasSecret: false
+secretName: api-gateway-secret
