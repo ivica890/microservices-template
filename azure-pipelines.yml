@@ -25,7 +25,12 @@ stages:
     pool:
       name: default  # Self-hosted agent pool
     steps:
-    
+
+    # Authenticate with Azure Container Registry
+    - script: |
+        az acr login --name ivica890acr
+      displayName: 'Login to ACR'
+
     # Check Java version before building with Maven
     - script: |
         java -version
