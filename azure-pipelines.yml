@@ -27,12 +27,10 @@ stages:
     steps:
 
     - script: |
-        echo "##[group]Setting JAVA_HOME"
-        export JAVA_HOME="/path/to/jdk-21"
-        export PATH="$JAVA_HOME/bin:$PATH"
-        echo "JAVA_HOME is set to $JAVA_HOME"
-        echo "##vso[task.setvariable variable=JAVA_HOME]$JAVA_HOME"
-        echo "##[endgroup]"
+        echo Setting JAVA_HOME to JDK 21
+        set JAVA_HOME=C:\Program Files\Java\jdk-21
+        set PATH=%JAVA_HOME%\bin;%PATH%
+        echo JAVA_HOME is %JAVA_HOME%
       displayName: 'Set JAVA_HOME to JDK 21'
 
     - task: Maven@3
