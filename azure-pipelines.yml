@@ -31,7 +31,7 @@ stages:
       inputs:
         mavenPomFile: '$(accountsMicroservicePath)/pom.xml'
         goals: 'clean compile jib:build'
-        options: '-DskipTests -Dimage=$(containerRegistry)/accounts:$(tag)'
+        # options: '-DskipTests -Dimage=$(containerRegistry)/accounts:$(tag)'
 
 
 # trigger:
