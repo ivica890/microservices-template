@@ -114,7 +114,7 @@ stages:
     # Deploy with Helm (Fix the path to the chart)
     - script: |
         cd $(Build.SourcesDirectory)/helm/services/accounts
-        helm upgrade --install accounts-service . --namespace default --set image.repository=ivica890acr.azurecr.io/accounts --set image.tag=51
+        helm upgrade --install accounts-service . --namespace default --set image.repository=ivica890acr.azurecr.io/accounts --set image.tag=51 -f ./values-dev.yaml
       displayName: 'Deploy with Helm'
 
 # trigger:
