@@ -105,7 +105,7 @@
 						<image>amazoncorretto:21</image>
 					</from>
 					<to>
-						<image>ivica890/${project.artifactId}:v8</image>
+						<image>ivica890acr.azurecr.io/$(project.artifactId):$(tag)</image> <!-- Push to ACR -->
 					</to>
 				</configuration>
 			</plugin>
