@@ -45,9 +45,9 @@ resources:
 #         options: '-DskipTests -Dimage=$(containerRegistry)/accounts:$(tag)'
 
 variables:
-  dockerRegistryServiceConnection: 'a28ba8d1-6339-4d70-9af9-4bf59bdad1de'
+  # dockerRegistryServiceConnection: 'a28ba8d1-6339-4d70-9af9-4bf59bdad1de'
   containerRegistry: 'ivica890acr.azurecr.io'
-  imagePullSecret: 'ivica890acr1016d349-auth'
+  # imagePullSecret: 'ivica890acr1016d349-auth'
   tag: '$(Build.BuildId)'
 
   # Path for Accounts microservice
