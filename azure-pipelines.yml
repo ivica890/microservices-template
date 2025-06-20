@@ -67,7 +67,7 @@ stages:
           - task: AzureCLI@2
             displayName: 'Login to Azure and ACR'
             inputs:
-              azureSubscription: 'AzureServiceConnection'   # <-- your Service Connection name here
+              azureSubscription: 'ivica890acr'   # <-- your Service Connection name here
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
