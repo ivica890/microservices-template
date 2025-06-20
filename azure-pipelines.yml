@@ -45,66 +45,77 @@ resources:
 #         options: '-DskipTests -Dimage=$(containerRegistry)/accounts:$(tag)'
 
 variables:
-  dockerRegistryServiceConnection: 'AzureServiceConnection'  # Your service connection name or ID
+  # dockerRegistryServiceConnection: 'a28ba8d1-6339-4d70-9af9-4bf59bdad1de'
   containerRegistry: 'ivica890acr.azurecr.io'
-  imagePullSecret: 'ivica890acr1016d349-auth'
+  # imagePullSecret: 'ivica890acr1016d349-auth'
   tag: '$(Build.BuildId)'
 
-  accountsMicroservicePath: 'accounts'
-  helmChartPath: 'helm/services/accounts'
-  releaseName: 'accounts-service'
-  namespace: 'default'
+  # Path for Accounts microservice
+  accountsMicroservicePath: 'accounts'  # Replace with your actual path
+
+  # Helm Chart variables
+  helmChartPath: '.helm/services/accounts'  # Path to your Helm chart
+  releaseName: 'accounts-service'     # Release name for Helm
+  namespace: 'default'                # Kubernetes namespace (change as needed)
 
 stages:
-  - stage: Build
-    displayName: Build stage
-    jobs:
-      - job: BuildAccountsMicroservice
-        displayName: Build Accounts Microservice
-        pool:
-          vmImage: 'ubuntu-latest'  # or 'self-hosted' if you have a custom agent with preinstalled tools
-        steps:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: BuildAccountsMicroservice
+    displayName: Build Accounts Microservice
+    pool:
+      name: default  # Self-hosted agent pool
+    steps:
 
-          # Authenticate and login to ACR
-          - task: AzureCLI@2
-            displayName: 'Login to ACR'
-            inputs:
-              azureSubscription: $(dockerRegistryServiceConnection)
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                az acr login --name $(containerRegistry | cut -d'.' -f1)
+    # Authenticate with Azure Container Registry
+    - script: |
+        az acr login --name ivica890acr
+      displayName: 'Login to ACR'
 
-          # Check Java version (Java 21 preinstalled on your agent)
-          - script: java -version
-            displayName: 'Check Java Version'
+    # Check Java version before building with Maven
+    - script: |
+        java -version
+      displayName: 'Check Java Version'
 
-          # Maven build with Jib plugin
-          - task: Maven@3
-            displayName: Build Docker Image with Jib
-            inputs:
-              mavenPomFile: '$(accountsMicroservicePath)/pom.xml'
-              goals: 'clean compile jib:build'
-              options: '-DskipTests -Dimage=$(containerRegistry)/accounts:$(tag)'
+    # Maven build with Jib (no need to install JDK manually)
+    - task: Maven@3
+      displayName: Build Accounts Microservice Docker Image with Jib
+      inputs:
+        mavenPomFile: '$(accountsMicroservicePath)/pom.xml'
+        goals: 'clean compile jib:build'
+        options: '-DskipTests -Dimage=$(containerRegistry)/accounts:$(tag)'
 
-          # AKS credentials acquisition (using service connection)
-          - task: AzureCLI@2
-            displayName: 'Login to AKS'
-            inputs:
-              azureSubscription: $(dockerRegistryServiceConnection)
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                az aks get-credentials --resource-group microservices-rg --name aks-cluster --overwrite-existing
+    # Install Helm
+    - script: |
+        curl -LO https://get.helm.sh/helm-v3.9.1-linux-amd64.tar.gz
+        tar -zxvf helm-v3.9.1-linux-amd64.tar.gz
+        sudo mv linux-amd64/helm /usr/local/bin/helm
+        helm version
+      displayName: 'Install Helm'
 
-          # Deploy Helm chart (Helm preinstalled on your agent)
-          - script: |
-              cd $(Build.SourcesDirectory)/$(helmChartPath)
-              helm upgrade --install $(releaseName) . --namespace $(namespace) \
-                --set image.repository=$(containerRegistry)/accounts \
-                --set image.tag=$(tag)
-            displayName: 'Deploy with Helm'
+    # Authenticate to Azure Kubernetes Service (AKS)
+    - script: |
+        az aks get-credentials --resource-group microservices-rg --name aks-cluster --overwrite-existing
+      displayName: 'Login to AKS'
 
+    # Deploy the Helm chart
+    - script: |
+        echo "Current working directory:"
+        echo %CD%  # For Windows
+      displayName: 'Log Current Working Directory'
+
+    # Ensure Helm dependencies are installed
+    - script: |
+        echo "Running helm dependency build..."
+        helm dependency build $(Build.SourcesDirectory)/helm/services/accounts
+      displayName: 'Build Helm Dependencies'
+
+    # Deploy with Helm (Fix the path to the chart)
+    - script: |
+        cd $(Build.SourcesDirectory)/helm/services/accounts
+        helm upgrade --install accounts-service . --namespace default --set image.repository=ivica890acr.azurecr.io/accounts --set image.tag=51 -f ./values-dev.yaml
+      displayName: 'Deploy with Helm'
 
 # trigger:
 # - azure-pipelines
