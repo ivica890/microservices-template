@@ -1,0 +1,32 @@
+global:
+  dbUrl: jdbc:postgresql://postgres:5432/cards
+  dbUsername: postgres
+  dbPassword: postgres
+  accountsServiceUrl: http://accounts-service:8080
+  cardsServiceUrl: http://cards-service:8090
+  loansServiceUrl: http://loans-service:8070
+  jwkSetUri: http://keycloak:80/realms/master/protocol/openid-connect/certs
+  openTelemetryJavaAgent: "-javaagent:/app/libs/opentelemetry-javaagent-2.11.0.jar"
+  otelExporterEndPoint: http://tempo-grafana-tempo-distributor:4318
+  otelExporterProtocol: http/protobuf
+  otelMetricsExporter: none
+  otelLogsExporter: none
+  otelServiceName: cards-service
+  postgres:
+    user: postgres
+    password: postgres
+
+common:
+  image:
+    repository: ivica890acr.azurecr.io/cards
+    tag: 89
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8090
+
+replicaCount: 1
+hasConfigMap: true
+configMapName: cards-configmap
+hasSecret: true
+secretName: cards-secret
