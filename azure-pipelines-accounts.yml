@@ -75,5 +75,5 @@ stages:
           # Deploy with Helm
           - script: |
               cd $(Build.SourcesDirectory)/helm/services/accounts
-              helm upgrade --install accounts-service . --namespace default --set image.repository=ivica890acr.azurecr.io/accounts --set image.tag=51 -f ./values-dev.yaml
+              helm upgrade --install accounts-service . --namespace default -f ./values-test.yaml
             displayName: 'Deploy with Helm'
