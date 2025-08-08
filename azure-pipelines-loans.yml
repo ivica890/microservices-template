@@ -1,0 +1,79 @@
+trigger:
+  branches:
+    include:
+      - azure-pipelines
+  paths:
+    include:
+      - loans/**
+
+pool:
+  name: default  # Ensure this matches your self-hosted agent pool
+
+resources:
+  - repo: self
+
+variables:
+  containerRegistry: 'ivica890acr.azurecr.io'
+  tag: '$(Build.BuildId)'
+
+  # Path for Loans microservice
+  loansMicroservicePath: 'loans'
+
+  # Helm Chart variables
+  helmChartPath: '.helm/services/loans'
+  releaseName: 'loans-service'
+  namespace: 'default'
+
+stages:
+  - stage: Build
+    displayName: Build stage
+    jobs:
+      - job: BuildLoansMicroservice
+        displayName: Build Loans Microservice
+        pool:
+          name: default  # Self-hosted agent pool
+        steps:
+
+          # Authenticate with Azure Container Registry
+          - script: |
+              az acr login --name ivica890acr
+            displayName: 'Login to ACR'
+
+          # Maven build with Jib (no need to install JDK manually)
+          - task: Maven@3
+            displayName: Build Loans Microservice Docker Image with Jib
+            inputs:
+              mavenPomFile: '$(loansMicroservicePath)/pom.xml'
+              goals: 'clean compile jib:build'
+              options: '-DskipTests -Dimage=$(containerRegistry)/loans:$(tag)'
+
+          # Install Helm
+          - script: |
+              curl -LO https://get.helm.sh/helm-v3.9.1-linux-amd64.tar.gz
+              tar -zxvf helm-v3.9.1-linux-amd64.tar.gz
+              sudo mv linux-amd64/helm /usr/local/bin/helm
+              helm version
+            displayName: 'Install Helm'
+
+          # Authenticate to Azure Kubernetes Service (AKS)
+          - script: |
+              az aks get-credentials --resource-group microservices-rg --name aks-cluster --overwrite-existing
+            displayName: 'Login to AKS'
+
+          # Deploy the Helm chart
+          - script: |
+              echo "Current working directory:"
+              echo %CD%  # For Windows
+            displayName: 'Log Current Working Directory'
+
+          # Ensure Helm dependencies are installed
+          - script: |
+              echo "Running helm dependency build..."
+              helm dependency build $(Build.SourcesDirectory)/helm/services/loans
+            displayName: 'Build Helm Dependencies'
+
+          # Deploy with Helm
+          - script: |
+              cd $(Build.SourcesDirectory)/helm/services/loans
+              helm upgrade --install loans-service . --namespace default --set image.repository=ivica890acr.azurecr.io/loans --set image.tag=51 -f ./values-dev.yaml
+            displayName: 'Deploy with Helm'
