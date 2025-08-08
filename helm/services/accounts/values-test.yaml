@@ -19,7 +19,7 @@ global:
 common:
   image:
     repository: ivica890acr.azurecr.io/accounts
-    tag: latest
+    tag: 88
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP

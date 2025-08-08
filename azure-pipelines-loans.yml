@@ -1,4 +1,5 @@
 trigger:
+  batch: true
   branches:
     include:
       - azure-pipelines
@@ -75,5 +76,5 @@ stages:
           # Deploy with Helm
           - script: |
               cd $(Build.SourcesDirectory)/helm/services/loans
-              helm upgrade --install loans-service . --namespace default --set image.repository=ivica890acr.azurecr.io/loans --set image.tag=51 -f ./values-dev.yaml
+              helm upgrade --install loans-service . --namespace default -f ./values-test.yaml
             displayName: 'Deploy with Helm'
