@@ -1,5 +1,10 @@
 trigger:
-  - none
+  branches:
+    include:
+      - azure-pipelines
+  paths:
+    include:
+      - accounts/**
 
 pool:
   name: default  # Ensure this matches your self-hosted agent pool
