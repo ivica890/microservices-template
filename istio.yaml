@@ -1,0 +1,96 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: microservices-template-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: microservices-template-service
+#  namespace: smart-goals
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - istio-system/microservices-template-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /api/accounts/
+#      rewrite:
+#        uri: /api/accounts/123
+      route:
+        - destination:
+            host: accounts-service
+            port:
+              number: 8080
+    - match:
+        - uri:
+            prefix: /api/cards/
+      route:
+        - destination:
+            host: cards-service
+            port:
+              number: 8090
+    - match:
+        - uri:
+            prefix: /api/loans/
+      route:
+        - destination:
+            host: loans-service
+            port:
+              number: 8070
+---
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: req-authn-for-all
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  jwtRules:
+    - issuer: "http://localhost:7080/realms/master"
+      jwksUri: "http://keycloak.default.svc.cluster.local:80/realms/master/protocol/openid-connect/certs"
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: require-jwt-for-all
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  action: ALLOW
+  rules:
+    - to:
+        - operation:
+            paths: ["/api/accounts/*"]
+      when:
+        - key: request.auth.claims[realm_access][roles]
+          values: ["ACCOUNTS"]
+    - to:
+        - operation:
+            paths: ["/api/cards/*"]
+      when:
+        - key: request.auth.claims[realm_access][roles]
+          values: ["CARDS"]
+    - to:
+        - operation:
+            paths: ["/api/loans/*"]
+      when:
+        - key: request.auth.claims[realm_access][roles]
+          values: ["LOANS"]
