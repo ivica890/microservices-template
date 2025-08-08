@@ -18,11 +18,11 @@ global:
 
 common:
   image:
-    repository: ivica890/accounts
-    tag: v8
+    repository: ivica890acr.azurecr.io/accounts
+    tag: 88
     pullPolicy: IfNotPresent
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 8080
     targetPort: 8080
 

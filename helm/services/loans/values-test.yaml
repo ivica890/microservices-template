@@ -1,5 +1,5 @@
 global:
-  dbUrl: jdbc:postgresql://postgres:5432/accounts
+  dbUrl: jdbc:postgresql://postgres:5432/loans
   dbUsername: postgres
   dbPassword: postgres
   accountsServiceUrl: http://accounts-service:8080
@@ -11,23 +11,22 @@ global:
   otelExporterProtocol: http/protobuf
   otelMetricsExporter: none
   otelLogsExporter: none
-  otelServiceName: accounts-service
-#  postgres:
-#    user: postgres
-#    password: postgres
+  otelServiceName: loans-service
+  postgres:
+    user: postgres
+    password: postgres
 
 common:
   image:
-    repository: ivica890/accounts
-    tag: v8
+    repository: ivica890acr.azurecr.io/loans
+    tag: 90
     pullPolicy: IfNotPresent
   service:
-    type: LoadBalancer
-    port: 8080
-    targetPort: 8080
+    type: ClusterIP
+    port: 8070
 
 replicaCount: 1
 hasConfigMap: true
-configMapName: accounts-configmap
-#hasSecret: true
-secretName: accounts-secret
+configMapName: loans-configmap
+hasSecret: true
+secretName: loans-secret
