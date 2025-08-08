@@ -6,6 +6,7 @@ trigger:
   paths:
     include:
       - accounts/**
+pr: none
 
 pool:
   name: default  # Ensure this matches your self-hosted agent pool

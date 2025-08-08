@@ -7,6 +7,8 @@ trigger:
     include:
       - cards/**
 
+pr: none
+
 pool:
   name: default  # Ensure this matches your self-hosted agent pool
 
