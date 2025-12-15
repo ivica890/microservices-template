@@ -107,10 +107,5 @@ stages:
               echo ""
               echo "5) Wait until deployment is ready"
               kubectl rollout status deploy/accounts-service -n default --timeout=180s
-              
-              echo ""
-              echo "6) Describe + recent events (useful when something fails)"
-              kubectl describe deploy/accounts-service -n default
-              kubectl get events -n default --sort-by=.metadata.creationTimestamp | tail -n 30
 
             displayName: 'Post-deploy: Helm + kubectl verification'
