@@ -79,33 +79,3 @@ stages:
               cd $(Build.SourcesDirectory)/helm/services/accounts
               helm upgrade --install accounts-service . --namespace default -f ./values-test.yaml
             displayName: 'Deploy with Helm'
-
-          - script: |
-              echo "=============================="
-              echo "POST-DEPLOY VERIFICATION"
-              echo "=============================="
-              
-              echo ""
-              echo "1) Cluster context"
-              kubectl config current-context
-              kubectl get nodes -o wide
-              
-              echo ""
-              echo "2) Helm releases in namespace: default"
-              helm list -n default
-              
-              echo ""
-              echo "3) Helm history for accounts-service"
-              helm history accounts-service -n default
-              
-              echo ""
-              echo "4) Kubernetes objects (default namespace)"
-              kubectl get pods -n default -o wide
-              kubectl get svc -n default -o wide
-              kubectl get deploy -n default -o wide
-              
-              echo ""
-              echo "5) Wait until deployment is ready"
-              kubectl rollout status deploy/accounts-service -n default --timeout=180s
-
-            displayName: 'Post-deploy: Helm + kubectl verification'
