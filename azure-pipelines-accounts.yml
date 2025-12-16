@@ -1,0 +1,81 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - azure-pipelines
+  paths:
+    include:
+      - accounts/**
+pr: none
+
+pool:
+  name: default  # Ensure this matches your self-hosted agent pool
+
+resources:
+  - repo: self
+
+variables:
+  containerRegistry: 'ivica890acr.azurecr.io'
+  tag: '$(Build.BuildId)'
+
+  # Path for Accounts microservice
+  accountsMicroservicePath: 'accounts'
+
+  # Helm Chart variables
+  helmChartPath: '.helm/services/accounts'
+  releaseName: 'accounts-service'
+  namespace: 'default'
+
+stages:
+  - stage: Build
+    displayName: Build stage
+    jobs:
+      - job: BuildAccountsMicroservice
+        displayName: Build Accounts Microservice
+        pool:
+          name: default  # Self-hosted agent pool
+        steps:
+
+          # Authenticate with Azure Container Registry
+          - script: |
+              az acr login --name ivica890acr
+            displayName: 'Login to ACR'
+
+          # Maven build with Jib (no need to install JDK manually)
+          - task: Maven@3
+            displayName: Build Accounts Microservice Docker Image with Jib
+            inputs:
+              mavenPomFile: '$(accountsMicroservicePath)/pom.xml'
+              goals: 'clean compile jib:build'
+              options: '-DskipTests -Dimage=$(containerRegistry)/accounts:$(tag)'
+
+          # Install Helm
+          - script: |
+              curl -LO https://get.helm.sh/helm-v3.9.1-linux-amd64.tar.gz
+              tar -zxvf helm-v3.9.1-linux-amd64.tar.gz
+              sudo mv linux-amd64/helm /usr/local/bin/helm
+              helm version
+            displayName: 'Install Helm'
+
+          # Authenticate to Azure Kubernetes Service (AKS)
+          - script: |
+              az aks get-credentials --resource-group microservices-rg --name aks-cluster --overwrite-existing
+            displayName: 'Login to AKS'
+
+          # Deploy the Helm chart
+          - script: |
+              echo "Current working directory:"
+              echo %CD%  # For Windows
+            displayName: 'Log Current Working Directory'
+
+          # Ensure Helm dependencies are installed
+          - script: |
+              echo "Running helm dependency build..."
+              helm dependency build $(Build.SourcesDirectory)/helm/services/accounts
+            displayName: 'Build Helm Dependencies'
+
+          # Deploy with Helm
+          - script: |
+              cd $(Build.SourcesDirectory)/helm/services/accounts
+              helm upgrade --install accounts-service . --namespace default -f ./values-test.yaml
+            displayName: 'Deploy with Helm'

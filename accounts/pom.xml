@@ -88,8 +88,13 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<source>21</source>
+					<target>21</target>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
@@ -100,7 +105,7 @@
 						<image>amazoncorretto:21</image>
 					</from>
 					<to>
-						<image>ivica890/${project.artifactId}:v8</image>
+						<image>ivica890acr.azurecr.io/$(project.artifactId):$(tag)</image> <!-- Push to ACR -->
 					</to>
 				</configuration>
 			</plugin>

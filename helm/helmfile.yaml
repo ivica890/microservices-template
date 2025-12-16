@@ -18,7 +18,3 @@ releases:
     values:
       - ./services/loans/values-{{ .Environment.Name }}.yaml
 
-  - name: api-gateway
-    chart: ./services/api-gateway
-    values:
-      - ./services/api-gateway/values-{{ .Environment.Name }}.yaml

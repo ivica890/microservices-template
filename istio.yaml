@@ -18,7 +18,6 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: microservices-template-service
-#  namespace: smart-goals
 spec:
   hosts:
     - "*"
@@ -28,24 +27,39 @@ spec:
     - match:
         - uri:
             prefix: /api/accounts/
-#      rewrite:
-#        uri: /api/accounts/123
+      timeout: 5s
+      retries:
+        attempts: 3
+        perTryTimeout: 2s
+        retryOn: gateway-error,connect-failure,refused-stream,5xx,reset
       route:
         - destination:
             host: accounts-service
             port:
               number: 8080
+
     - match:
         - uri:
             prefix: /api/cards/
+      timeout: 5s
+      retries:
+        attempts: 3
+        perTryTimeout: 2s
+        retryOn: gateway-error,connect-failure,refused-stream,5xx,reset
       route:
         - destination:
             host: cards-service
             port:
               number: 8090
+
     - match:
         - uri:
             prefix: /api/loans/
+      timeout: 5s
+      retries:
+        attempts: 3
+        perTryTimeout: 2s
+        retryOn: gateway-error,connect-failure,refused-stream,5xx,reset
       route:
         - destination:
             host: loans-service
@@ -62,8 +76,10 @@ spec:
     matchLabels:
       istio: ingressgateway
   jwtRules:
-    - issuer: "http://localhost:7080/realms/master"
-      jwksUri: "http://keycloak.default.svc.cluster.local:80/realms/master/protocol/openid-connect/certs"
+    - issuer: "https://sts.windows.net/2e9d1507-a56f-45ea-a9f6-b107e61a2b4e/"
+      jwksUri: "https://login.microsoftonline.com/2e9d1507-a56f-45ea-a9f6-b107e61a2b4e/discovery/v2.0/keys"
+      audiences:
+        - "api://7ee2de60-5dff-4bf8-b71d-8b01a390f4d3"
 ---
 apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
@@ -80,17 +96,54 @@ spec:
         - operation:
             paths: ["/api/accounts/*"]
       when:
-        - key: request.auth.claims[realm_access][roles]
+        - key: request.auth.claims[roles]
           values: ["ACCOUNTS"]
     - to:
         - operation:
             paths: ["/api/cards/*"]
       when:
-        - key: request.auth.claims[realm_access][roles]
+        - key: request.auth.claims[roles]
           values: ["CARDS"]
     - to:
         - operation:
             paths: ["/api/loans/*"]
       when:
-        - key: request.auth.claims[realm_access][roles]
+        - key: request.auth.claims[roles]
           values: ["LOANS"]
+---
+# 1) Enforce STRICT mTLS for all services in the default namespace
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: default
+spec:
+  mtls:
+    mode: STRICT
+
+---
+# 2) Make ALL traffic TO services in default namespace use mTLS
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: default
+  namespace: default
+spec:
+  host: "*.default.svc.cluster.local"
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+
+    # Circuit breaking (limits how much we allow per upstream)
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 100
+        maxRequestsPerConnection: 100
+
+    # Outlier detection (eject unhealthy pods)
+    outlierDetection:
+      interval: 5s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
